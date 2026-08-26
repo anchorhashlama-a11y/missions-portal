@@ -69,11 +69,14 @@ export const Profile: React.FC<ProfileProps> = ({ setPage }) => {
             תגיות משויכות
           </h4>
           <div style={badgesContainerStyle}>
-            {userTags.map(tag => (
-              <span key={tag.id} style={{ ...badgeStyle, backgroundColor: tag.color + '20', color: tag.color, borderColor: tag.color + '40' }}>
-                {tag.name}
-              </span>
-            ))}
+            {userTags.map(tag => {
+              const categoryColor = tag.category === 'team' ? '#003c90' : tag.category === 'major' ? '#505f76' : '#732900';
+              return (
+                <span key={tag.id} style={{ ...badgeStyle, backgroundColor: categoryColor + '20', color: categoryColor, borderColor: categoryColor + '40' }}>
+                  {tag.name}
+                </span>
+              );
+            })}
             {userTags.length === 0 && <span style={emptyStyle}>אין תגיות מוגדרות</span>}
           </div>
         </div>
