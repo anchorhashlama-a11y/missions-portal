@@ -22,6 +22,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ taskId, setPage }) => {
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [link, setLink] = useState('');
+  const [linkText, setLinkText] = useState('');
   
   // Attachments State
   const [documents, setDocuments] = useState<TaskDocument[]>([]);
@@ -82,6 +83,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ taskId, setPage }) => {
             setDueDate(localDate.toISOString().slice(0, 16));
 
             setLink(existingTask.link || '');
+            setLinkText(existingTask.linkText || '');
             setDocuments(existingTask.documents || []);
             setTargetTagIds(existingTask.targetTagIds || []);
             setTargetUserIds(existingTask.targetUserIds || []);
@@ -174,7 +176,8 @@ export const TaskForm: React.FC<TaskFormProps> = ({ taskId, setPage }) => {
           title: title.trim(),
           description: description.trim(),
           dueDate: isoDueDate,
-          link: link.trim() || undefined,
+          link: link.trim(),
+          linkText: linkText.trim(),
           documents,
           targetTagIds,
           targetUserIds,
@@ -208,7 +211,8 @@ export const TaskForm: React.FC<TaskFormProps> = ({ taskId, setPage }) => {
           publisherId: currentUser.id,
           publisherRoleId: activeRole.id,
           dueDate: isoDueDate,
-          link: link.trim() || undefined,
+          link: link.trim(),
+          linkText: linkText.trim(),
           documents,
           targetTagIds,
           targetUserIds,
@@ -337,6 +341,22 @@ export const TaskForm: React.FC<TaskFormProps> = ({ taskId, setPage }) => {
             />
           </div>
         </div>
+
+        {/* Link Text - only shown when a link is provided */}
+        {link.trim() && (
+          <div className="form-group">
+            <label className="form-label">טקסט הכפתור לקישור - אופציונלי</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder='לדוגמה: "מלא את הטופס", "גש לגיליון" (ברירת מחדל: פתח קישור לביצוע המשימה)'
+              value={linkText}
+              onChange={(e) => setLinkText(e.target.value)}
+              disabled={saving}
+            />
+          </div>
+        )}
+
 
         {/* Target Audience Selectors */}
         <div className="form-group">

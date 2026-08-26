@@ -12,7 +12,8 @@ import {
   Users, 
   Calendar,
   Clock,
-  Bell
+  Bell,
+  Download
 } from 'lucide-react';
 
 interface TaskTrackingProps {
@@ -195,6 +196,38 @@ export const TaskTracking: React.FC<TaskTrackingProps> = ({ taskId, setPage }) =
     day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
   });
 
+  const exportToExcel = () => {
+    const BOM = '\uFEFF';
+    let csvContent = "צוות,שם משתמש,אימייל,נצפה,בוצע\n";
+
+    const sortedGroups = Object.values(groupedProgress).sort((a, b) => {
+      if (a.team.id === 'no_team') return 1;
+      if (b.team.id === 'no_team') return -1;
+      return a.team.name.localeCompare(b.team.name, 'he', { numeric: true });
+    });
+
+    sortedGroups.forEach(group => {
+      group.users.forEach(item => {
+        const teamName = `"${group.team.name.replace(/"/g, '""')}"`;
+        const name = `"${item.user.name.replace(/"/g, '""')}"`;
+        const email = `"${item.user.email.replace(/"/g, '""')}"`;
+        const viewed = item.viewed ? "כן" : "לא";
+        const completed = item.completed ? "כן" : "לא";
+        
+        csvContent += `${teamName},${name},${email},${viewed},${completed}\n`;
+      });
+    });
+
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `דוח_ביצועים_${task?.title || 'משימה'}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="fade-in">
       {/* Top back row */}
@@ -214,9 +247,19 @@ export const TaskTracking: React.FC<TaskTrackingProps> = ({ taskId, setPage }) =
               תפקיד מפקח: <b>{activeRole?.name}</b> (מציג נתוני ביצוע בטווח אחריותך בלבד)
             </p>
           </div>
-          <div style={metaBadgeStyle}>
-            <Calendar size={14} />
-            <span>תאריך יעד: {dueDate}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <div style={metaBadgeStyle}>
+              <Calendar size={14} />
+              <span>תאריך יעד: {dueDate}</span>
+            </div>
+            <button 
+              onClick={exportToExcel} 
+              className="btn btn-outline"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', fontSize: '0.85rem' }}
+            >
+              <Download size={14} />
+              <span>ייצוא לאקסל</span>
+            </button>
           </div>
         </div>
 

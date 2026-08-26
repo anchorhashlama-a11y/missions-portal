@@ -45,6 +45,7 @@ export interface Task {
   updatedAt: string;
   dueDate: string;
   link?: string;
+  linkText?: string;
   documents?: TaskDocument[];
   targetTagIds: string[]; // targets specific groups
   targetUserIds: string[]; // targets specific users

@@ -152,7 +152,7 @@ export const TaskDetails: React.FC<TaskDetailsProps> = ({ taskId, setPage, onEdi
                 style={actionLinkBtnStyle}
               >
                 <LinkIcon size={18} />
-                <span>פתח קישור לביצוע המשימה</span>
+                <span>{task.linkText?.trim() || 'פתח קישור לביצוע המשימה'}</span>
               </a>
             )}
           </div>

@@ -46,7 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 id: 'user_' + fbUser.uid,
                 name: fbUser.displayName || fbUser.email.split('@')[0],
                 email: fbUser.email,
-                avatar: fbUser.photoURL || undefined
+                avatar: fbUser.photoURL || ""
               };
               await dbService.saveUser(newUser);
               await dbService.saveUserRoles(newUser.id, ['role_regular']);
