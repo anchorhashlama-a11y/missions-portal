@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { dbService } from '../services/db';
 import type { Forum, ForumPost } from '../types';
-import { Users, BookOpen, Megaphone, ChevronLeft, MessageSquare } from 'lucide-react';
+import { Users, BookOpen, Megaphone, ChevronLeft, MessageSquare, Search } from 'lucide-react';
 
 interface ForumsProps {
   setPage: (page: string) => void;
@@ -16,6 +16,10 @@ export const Forums: React.FC<ForumsProps> = ({ setPage, setSelectedForumId }) =
   const [forumUnreadStates, setForumUnreadStates] = useState<Record<string, boolean>>({});
   const [forumPostCounts, setForumPostCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
+
+  // Search & filter state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'team' | 'subject' | 'general' | 'unread'>('all');
 
   useEffect(() => {
     const fetchForums = async () => {
@@ -80,19 +84,73 @@ export const Forums: React.FC<ForumsProps> = ({ setPage, setSelectedForumId }) =
     }
   };
 
+  // Apply search + filter
+  const filteredForums = forums.filter(forum => {
+    const matchesSearch =
+      searchQuery.trim() === '' ||
+      forum.name.includes(searchQuery.trim()) ||
+      forum.description.includes(searchQuery.trim());
+
+    const matchesFilter =
+      activeFilter === 'all' ||
+      (activeFilter === 'unread' && forumUnreadStates[forum.id]) ||
+      forum.type === activeFilter;
+
+    return matchesSearch && matchesFilter;
+  });
+
+  const unreadCount = forums.filter(f => forumUnreadStates[f.id]).length;
+
+  const filterButtons: { id: typeof activeFilter; label: string }[] = [
+    { id: 'all', label: 'הכל' },
+    { id: 'unread', label: `לא נקרא${unreadCount > 0 ? ` (${unreadCount})` : ''}` },
+    { id: 'team', label: 'צוותי' },
+    { id: 'subject', label: 'מקצועי' },
+    { id: 'general', label: 'כללי' },
+  ];
+
   return (
     <div className="fade-in">
-      <h1 style={{ marginBottom: '24px' }}>פורומים</h1>
+      <h1 style={{ marginBottom: '20px' }}>פורומים</h1>
+
+      {/* Search + Filter Bar */}
+      <div style={searchBarWrapperStyle}>
+        <div style={searchInputWrapperStyle}>
+          <Search size={16} style={{ color: 'var(--outline)', flexShrink: 0 }} />
+          <input
+            type="text"
+            placeholder="חפש פורום לפי שם או תיאור..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            style={searchInputStyle}
+          />
+        </div>
+        <div style={filterRowStyle}>
+          {filterButtons.map(btn => (
+            <button
+              key={btn.id}
+              onClick={() => setActiveFilter(btn.id)}
+              style={activeFilter === btn.id ? activeFilterBtnStyle : filterBtnStyle}
+            >
+              {btn.label}
+            </button>
+          ))}
+        </div>
+      </div>
       
       <div style={forumsGridStyle}>
-        {forums.length === 0 ? (
+        {filteredForums.length === 0 ? (
           <div style={emptyCardStyle}>
             <MessageSquare size={36} color="var(--outline)" />
-            <h3>אין פורומים זמינים</h3>
-            <p className="text-muted">אינך משויך לאף קבוצה עם פורום פעיל כרגע.</p>
+            <h3>לא נמצאו פורומים</h3>
+            <p className="text-muted">
+              {searchQuery || activeFilter !== 'all'
+                ? 'נסה לשנות את החיפוש או הסינון.'
+                : 'אינך משויך לאף קבוצה עם פורום פעיל כרגע.'}
+            </p>
           </div>
         ) : (
-          forums.map(forum => {
+          filteredForums.map(forum => {
             const hasUnread = forumUnreadStates[forum.id];
             const postCount = forumPostCounts[forum.id] || 0;
             
@@ -134,6 +192,7 @@ export const Forums: React.FC<ForumsProps> = ({ setPage, setSelectedForumId }) =
   );
 };
 
+
 // Inline styling
 const loadingStyle: React.CSSProperties = {
   display: 'flex',
@@ -143,6 +202,63 @@ const loadingStyle: React.CSSProperties = {
   fontSize: '1.2rem',
   fontWeight: 'bold',
   color: 'var(--outline)'
+};
+
+const searchBarWrapperStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px',
+  marginBottom: '24px',
+  backgroundColor: 'var(--surface)',
+  border: '1px solid var(--outline-variant)',
+  borderRadius: 'var(--rounded-xl)',
+  padding: '16px 20px',
+  boxShadow: 'var(--shadow-card)'
+};
+
+const searchInputWrapperStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '10px',
+  backgroundColor: 'var(--surface-container-low)',
+  border: '1px solid var(--outline-variant)',
+  borderRadius: 'var(--rounded-md)',
+  padding: '10px 14px'
+};
+
+const searchInputStyle: React.CSSProperties = {
+  flex: 1,
+  border: 'none',
+  outline: 'none',
+  background: 'transparent',
+  fontSize: '0.92rem',
+  color: 'var(--on-surface)',
+  fontFamily: 'inherit'
+};
+
+const filterRowStyle: React.CSSProperties = {
+  display: 'flex',
+  gap: '8px',
+  flexWrap: 'wrap'
+};
+
+const filterBtnStyle: React.CSSProperties = {
+  padding: '6px 14px',
+  borderRadius: 'var(--rounded-full)',
+  border: '1px solid var(--outline-variant)',
+  backgroundColor: 'var(--surface-container-low)',
+  color: 'var(--on-surface-variant)',
+  fontSize: '0.82rem',
+  fontWeight: 600,
+  cursor: 'pointer',
+  transition: 'all 0.15s ease'
+};
+
+const activeFilterBtnStyle: React.CSSProperties = {
+  ...filterBtnStyle,
+  backgroundColor: 'var(--primary)',
+  color: 'var(--on-primary)',
+  borderColor: 'var(--primary)'
 };
 
 const forumsGridStyle: React.CSSProperties = {
