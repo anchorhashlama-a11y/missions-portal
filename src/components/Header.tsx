@@ -90,7 +90,7 @@ export const Header: React.FC<HeaderProps> = ({ setPage }) => {
                   <UserIcon size={14} />
                 </div>
               )}
-              <div style={userInfoTextStyle}>
+              <div style={userInfoTextStyle} className="hide-mobile-text">
                 <span style={userNameStyle}>{currentUser.name}</span>
                 <span style={userRoleStyle}>
                   {activeRole ? activeRole.name : "ללא תפקיד"}

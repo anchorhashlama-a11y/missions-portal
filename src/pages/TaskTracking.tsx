@@ -196,7 +196,11 @@ export const TaskTracking: React.FC<TaskTrackingProps> = ({ taskId, setPage }) =
             <p className="text-muted">אין נמענים תחת טווח האחריות שלך שקיבלו את המשימה הזו.</p>
           </div>
         ) : (
-          Object.values(groupedProgress).map(group => {
+          Object.values(groupedProgress).sort((a, b) => {
+            if (a.team.id === 'no_team') return 1;
+            if (b.team.id === 'no_team') return -1;
+            return a.team.name.localeCompare(b.team.name, 'he', { numeric: true });
+          }).map(group => {
             const teamProgressPercent = group.users.length > 0 
               ? Math.round((group.completedCount / group.users.length) * 100)
               : 0;

@@ -166,7 +166,7 @@ export const TaskDetails: React.FC<TaskDetailsProps> = ({ taskId, setPage, onEdi
               </h3>
               <div style={docListStyle}>
                 {task.documents.map((doc, idx) => (
-                  <a key={idx} href={doc.url} style={docItemStyle}>
+                  <a key={idx} href={doc.url} target="_blank" rel="noreferrer" style={docItemStyle}>
                     <FileText size={16} />
                     <span>{doc.name}</span>
                   </a>

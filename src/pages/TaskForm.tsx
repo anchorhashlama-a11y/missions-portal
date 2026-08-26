@@ -26,6 +26,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ taskId, setPage }) => {
   // Attachments State
   const [documents, setDocuments] = useState<TaskDocument[]>([]);
   const [newDocName, setNewDocName] = useState('');
+  const [newDocUrl, setNewDocUrl] = useState('');
 
   // Target Audience State
   const [targetTagIds, setTargetTagIds] = useState<string[]>([]);
@@ -104,8 +105,9 @@ export const TaskForm: React.FC<TaskFormProps> = ({ taskId, setPage }) => {
   const handleAddDocument = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newDocName.trim()) return;
-    setDocuments([...documents, { name: newDocName.trim(), url: '#' }]);
+    setDocuments([...documents, { name: newDocName.trim(), url: newDocUrl.trim() || '#' }]);
     setNewDocName('');
+    setNewDocUrl('');
   };
 
   const handleRemoveDocument = (index: number) => {
@@ -388,6 +390,15 @@ export const TaskForm: React.FC<TaskFormProps> = ({ taskId, setPage }) => {
               placeholder="שם הקובץ (לדוגמה: סילבוס.pdf)"
               value={newDocName}
               onChange={(e) => setNewDocName(e.target.value)}
+              style={{ flex: '1 1 120px' }}
+            />
+            <input
+              type="url"
+              className="form-control"
+              placeholder="קישור לקובץ"
+              value={newDocUrl}
+              onChange={(e) => setNewDocUrl(e.target.value)}
+              style={{ flex: '1 1 120px' }}
             />
             <button 
               type="button" 
@@ -578,7 +589,8 @@ const deleteDocBtnStyle: React.CSSProperties = {
 const addDocRowStyle: React.CSSProperties = {
   display: 'flex',
   gap: '12px',
-  alignItems: 'center'
+  alignItems: 'center',
+  flexWrap: 'wrap'
 };
 
 const addDocBtnStyle: React.CSSProperties = {

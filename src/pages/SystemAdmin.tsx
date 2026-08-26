@@ -64,6 +64,15 @@ export const SystemAdmin: React.FC = () => {
     }
   };
 
+  const scrollToForm = () => {
+    setTimeout(() => {
+      const formEl = document.querySelector('.admin-form');
+      if (formEl) {
+        formEl.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 50);
+  };
+
   if (loading) {
     return <div style={loadingStyle}>טוען הגדרות מערכת...</div>;
   }
@@ -245,7 +254,7 @@ export const SystemAdmin: React.FC = () => {
                     <div style={itemSubtitleStyle}>קטגוריה: {tag.category === 'team' ? 'צוות' : tag.category === 'major' ? 'מגמה' : 'מיוחד'}</div>
                   </div>
                   <button 
-                    onClick={() => setEditingTag(tag)} 
+                    onClick={() => { setEditingTag(tag); scrollToForm(); }} 
                     className="btn btn-secondary" 
                     style={editBtnStyle}
                   >
@@ -316,7 +325,7 @@ export const SystemAdmin: React.FC = () => {
                     </div>
                   </div>
                   <button 
-                    onClick={() => setEditingRole(role)} 
+                    onClick={() => { setEditingRole(role); scrollToForm(); }} 
                     className="btn btn-secondary" 
                     style={editBtnStyle}
                   >
@@ -442,11 +451,14 @@ export const SystemAdmin: React.FC = () => {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontWeight: 800 }}>{user.name}</span>
                       <button 
-                        onClick={() => setEditingUserMapping({
-                          user,
-                          roleIds: myRoleIds,
-                          tagIds: myTagIds
-                        })} 
+                        onClick={() => {
+                          setEditingUserMapping({
+                            user,
+                            roleIds: myRoleIds,
+                            tagIds: myTagIds
+                          });
+                          scrollToForm();
+                        }} 
                         className="btn btn-secondary" 
                         style={editBtnStyle}
                       >
@@ -554,7 +566,7 @@ export const SystemAdmin: React.FC = () => {
                       <div style={itemSubtitleStyle}>מנהלים: {managerRoles.join(', ') || 'מה״מ'}</div>
                     </div>
                     <button 
-                      onClick={() => setEditingForum(forum)} 
+                      onClick={() => { setEditingForum(forum); scrollToForm(); }} 
                       className="btn btn-secondary" 
                       style={editBtnStyle}
                     >

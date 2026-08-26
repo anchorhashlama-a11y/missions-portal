@@ -31,18 +31,20 @@ export const Home: React.FC<HomeProps> = ({ setPage, setSelectedTaskId, setSelec
       if (!currentUser) return;
       try {
         setLoading(true);
-        // Load tasks and filter
-        const allTasks = await dbService.getTasks();
-        const userTasks = backendService.getTasksForUser(currentUser.id, allTasks, [], []);
-        setTasks(userTasks);
+        // Load data in parallel where possible
+        const [allTasks, allUsers, allUserTags, allStatuses, allForums] = await Promise.all([
+          dbService.getTasks(),
+          dbService.getUsers(),
+          dbService.getUserTags(),
+          dbService.getTaskStatuses(),
+          dbService.getForums()
+        ]);
 
-        // Load statuses
-        const allStatuses = await dbService.getTaskStatuses();
+        const userTasks = backendService.getTasksForUser(currentUser.id, allTasks, allUsers, allUserTags);
+        setTasks(userTasks);
         setStatuses(allStatuses);
 
         // Load recent posts from user's forums
-        const allForums = await dbService.getForums();
-        const allUserTags = await dbService.getUserTags();
         const myTagIds = allUserTags.filter(ut => ut.userId === currentUser.id).map(ut => ut.tagId);
         
         // Filter forums the user has access to
