@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { auth, googleProvider } from '../firebase';
-import { signInWithPopup, signOut as fbSignOut } from 'firebase/auth';
+import { signInWithPopup, signInWithRedirect, signOut as fbSignOut } from 'firebase/auth';
 import type { User, Role, Tag, UserRole, UserTag } from '../types';
 import { dbService } from '../services/db';
 
@@ -112,7 +112,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     try {
       setLoading(true);
-      await signInWithPopup(auth, googleProvider);
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        await signInWithRedirect(auth, googleProvider);
+      } else {
+        await signInWithPopup(auth, googleProvider);
+      }
     } catch (error) {
       console.error("Google Auth login failed:", error);
       alert("ההתחברות נכשלה. אנא נסה שנית.");
