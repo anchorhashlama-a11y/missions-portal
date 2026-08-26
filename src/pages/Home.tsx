@@ -283,41 +283,43 @@ const welcomeRowStyle: React.CSSProperties = {
 const metricsGridStyle: React.CSSProperties = {
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-  gap: '16px',
-  marginBottom: '32px'
+  gap: '20px',
+  marginBottom: '40px'
 };
 
 const metricCardStyle: React.CSSProperties = {
   backgroundColor: 'var(--surface)',
   borderRadius: 'var(--rounded-lg)',
   border: '1px solid var(--outline-variant)',
-  padding: '16px 20px',
+  padding: '22px 24px',
   display: 'flex',
   alignItems: 'center',
-  gap: '16px',
+  gap: '20px',
   boxShadow: 'var(--shadow-card)'
 };
 
 const metricIconContainerStyle: React.CSSProperties = {
-  width: '40px',
-  height: '40px',
+  width: '48px',
+  height: '48px',
   borderRadius: 'var(--rounded-full)',
   backgroundColor: 'var(--surface-container-high)',
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center'
+  justifyContent: 'center',
+  flexShrink: 0
 };
 
 const metricLabelStyle: React.CSSProperties = {
-  fontSize: '0.8rem',
+  fontSize: '0.82rem',
   fontWeight: 700,
   color: 'var(--on-surface-variant)'
 };
 
 const metricValStyle: React.CSSProperties = {
-  fontSize: '1.2rem',
+  fontSize: '1.3rem',
   fontWeight: 800,
-  color: 'var(--on-surface)'
+  color: 'var(--on-surface)',
+  marginTop: '2px'
 };
 
 const mainGridStyle: React.CSSProperties = {

@@ -43,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({ setPage }) => {
         <img src="/logo.png" alt="עוגן" style={mobileLogoStyle} />
         <div style={brandWrapperStyle}>
           <h1 style={brandTextStyle}>עוגן</h1>
-          <span style={brandSubtitleStyle}>מערכת ניהול ההשלמה הטכנולוגית של תקשוב</span>
+          <span style={brandSubtitleStyle}>מערכת השלמה הטכנולוגית</span>
         </div>
       </div>
 
@@ -129,16 +129,17 @@ const headerStyle: React.CSSProperties = {
 };
 
 const brandContainerStyle: React.CSSProperties = {
-  display: 'none',
+  display: 'flex',
   alignItems: 'center',
-  gap: '8px'
+  gap: '12px'
 };
 
 const mobileLogoStyle: React.CSSProperties = {
   width: '36px',
   height: '36px',
   objectFit: 'contain',
-  borderRadius: 'var(--rounded-md)'
+  borderRadius: 'var(--rounded-md)',
+  flexShrink: 0
 };
 
 const brandWrapperStyle: React.CSSProperties = {
@@ -148,7 +149,7 @@ const brandWrapperStyle: React.CSSProperties = {
 };
 
 const brandTextStyle: React.CSSProperties = {
-  fontSize: '1.15rem',
+  fontSize: '1.3rem',
   fontWeight: 800,
   color: 'var(--primary)',
   margin: 0,
@@ -156,12 +157,11 @@ const brandTextStyle: React.CSSProperties = {
 };
 
 const brandSubtitleStyle: React.CSSProperties = {
-  fontSize: '0.7rem',
-  fontWeight: 500,
+  fontSize: '0.65rem',
   color: 'var(--on-surface-variant)',
   margin: 0,
   lineHeight: 1.2,
-  opacity: 0.85
+  opacity: 0.8
 };
 
 const controlsStyle: React.CSSProperties = {

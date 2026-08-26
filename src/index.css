@@ -181,6 +181,7 @@ button:disabled {
   padding: 20px;
   margin-bottom: 16px;
   position: relative;
+  overflow: hidden;
   box-shadow: var(--shadow-card);
   transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.3s ease, background-color 0.3s ease;
 }

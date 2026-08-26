@@ -76,14 +76,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, setPage }) => {
 
   return (
     <aside className="sidebar">
-      <div style={logoContainerStyle}>
-        <img src="/logo.png" alt="עוגן" style={logoIconStyle} />
-        <div>
-          <h2 style={logoTextStyle}>עוגן</h2>
-          <div style={logoSubtitleStyle}>מערכת השלמה הטכנולוגית</div>
-        </div>
-      </div>
-
       <nav style={navStyle}>
         {navItems.map(item => {
           const isActive = currentPage === item.id || 
@@ -115,38 +107,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, setPage }) => {
   );
 };
 
-
-const logoContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '12px',
-  marginBottom: '32px',
-  paddingRight: '8px'
-};
-
-const logoIconStyle: React.CSSProperties = {
-  width: '44px',
-  height: '44px',
-  objectFit: 'contain',
-  borderRadius: 'var(--rounded-md)',
-  flexShrink: 0
-};
-
-const logoTextStyle: React.CSSProperties = {
-  fontSize: '1.3rem',
-  fontWeight: 800,
-  color: 'var(--primary)',
-  margin: 0,
-  lineHeight: 1.1
-};
-
-const logoSubtitleStyle: React.CSSProperties = {
-  fontSize: '0.65rem',
-  color: 'var(--on-surface-variant)',
-  marginTop: '2px',
-  lineHeight: 1.2,
-  opacity: 0.8
-};
 
 const navStyle: React.CSSProperties = {
   display: 'flex',
