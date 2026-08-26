@@ -9,7 +9,7 @@ import {
   where,
   deleteDoc
 } from 'firebase/firestore';
-import type { User, Tag, Role, Task, Forum, ForumPost, TaskStatus, UserRole, UserTag } from '../types';
+import type { User, Tag, Role, Task, Forum, ForumPost, TaskStatus, UserRole, UserTag, TaskReminder } from '../types';
 import * as seeder from './seeder';
 
 // Unified Database API
@@ -274,5 +274,31 @@ export const dbService = {
     };
     await setDoc(doc(firestoreDb, 'posts', newPost.id), newPost);
     return newPost;
+  },
+
+  // TASK REMINDERS
+  async getRemindersForUser(userId: string): Promise<TaskReminder[]> {
+    const q = query(
+      collection(firestoreDb, 'task_reminders'),
+      where('userId', '==', userId),
+      where('seenAt', '==', null)
+    );
+    const snap = await getDocs(q);
+    return snap.docs.map(d => d.data() as TaskReminder);
+  },
+
+  async sendReminders(taskId: string, userIds: string[]): Promise<void> {
+    const now = new Date().toISOString();
+    for (const userId of userIds) {
+      const id = 'reminder_' + Math.random().toString(36).substr(2, 9);
+      const reminder: TaskReminder = { id, taskId, userId, sentAt: now, seenAt: null };
+      await setDoc(doc(firestoreDb, 'task_reminders', id), reminder);
+    }
+  },
+
+  async markReminderSeen(reminderId: string): Promise<void> {
+    await updateDoc(doc(firestoreDb, 'task_reminders', reminderId), {
+      seenAt: new Date().toISOString()
+    });
   }
 };

@@ -11,7 +11,8 @@ import {
   EyeOff, 
   Users, 
   Calendar,
-  Clock
+  Clock,
+  Bell
 } from 'lucide-react';
 
 interface TaskTrackingProps {
@@ -38,6 +39,11 @@ export const TaskTracking: React.FC<TaskTrackingProps> = ({ taskId, setPage }) =
     completedCount: number;
   }>>({});
   const [summaryStats, setSummaryStats] = useState({ completed: 0, total: 0, percent: 0 });
+
+  // Reminders state
+  const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set());
+  const [sendingReminders, setSendingReminders] = useState(false);
+  const [reminderSuccess, setReminderSuccess] = useState(false);
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -128,6 +134,48 @@ export const TaskTracking: React.FC<TaskTrackingProps> = ({ taskId, setPage }) =
     fetchProgress();
   }, [taskId, currentUser, activeRole]);
 
+  const incompleteUsers = Object.values(groupedProgress)
+    .flatMap(group => group.users)
+    .filter(u => !u.completed)
+    .map(u => u.user.id);
+    
+  const allIncompleteSelected = incompleteUsers.length > 0 && incompleteUsers.every(id => selectedUserIds.has(id));
+
+  const toggleSelectAll = () => {
+    if (allIncompleteSelected) {
+      setSelectedUserIds(new Set());
+    } else {
+      setSelectedUserIds(new Set(incompleteUsers));
+    }
+  };
+
+  const toggleUserSelection = (userId: string) => {
+    const newSelection = new Set(selectedUserIds);
+    if (newSelection.has(userId)) {
+      newSelection.delete(userId);
+    } else {
+      newSelection.add(userId);
+    }
+    setSelectedUserIds(newSelection);
+  };
+
+  const handleSendReminders = async () => {
+    if (selectedUserIds.size === 0 || !task || !currentUser) return;
+    setSendingReminders(true);
+    setReminderSuccess(false);
+    try {
+      await dbService.sendReminders(task.id, Array.from(selectedUserIds));
+      setReminderSuccess(true);
+      setSelectedUserIds(new Set());
+      setTimeout(() => setReminderSuccess(false), 3000);
+    } catch (err) {
+      console.error('Failed to send reminders', err);
+      alert('שגיאה בשליחת תזכורות');
+    } finally {
+      setSendingReminders(false);
+    }
+  };
+
   if (loading) {
     return <div style={loadingStyle}>טוען דוח מעקב...</div>;
   }
@@ -187,6 +235,33 @@ export const TaskTracking: React.FC<TaskTrackingProps> = ({ taskId, setPage }) =
         </div>
       </div>
 
+      {/* Reminders Action Bar */}
+      {incompleteUsers.length > 0 && (
+        <div className="card" style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <input 
+              type="checkbox" 
+              checked={allIncompleteSelected} 
+              onChange={toggleSelectAll} 
+              style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+            />
+            <span style={{ fontWeight: 500 }}>
+              בחירת כל מי שטרם ביצע ({incompleteUsers.length})
+            </span>
+          </div>
+          
+          <button 
+            className="btn btn-primary"
+            onClick={handleSendReminders}
+            disabled={selectedUserIds.size === 0 || sendingReminders}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: selectedUserIds.size === 0 ? 0.5 : 1 }}
+          >
+            <Bell size={18} />
+            {sendingReminders ? 'שולח...' : reminderSuccess ? 'נשלח בהצלחה!' : `שלח תזכורת (${selectedUserIds.size})`}
+          </button>
+        </div>
+      )}
+
       {/* Grouped Lists */}
       <div style={groupsContainerStyle}>
         {Object.keys(groupedProgress).length === 0 ? (
@@ -224,16 +299,28 @@ export const TaskTracking: React.FC<TaskTrackingProps> = ({ taskId, setPage }) =
                 <div style={usersListStyle}>
                   {group.users.map(item => (
                     <div key={item.user.id} style={userRowStyle}>
-                      {/* User Bio */}
-                      <div style={userBioStyle}>
-                        {item.user.avatar ? (
-                          <img src={item.user.avatar} alt="" style={avatarStyle} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        {!item.completed ? (
+                          <input 
+                            type="checkbox" 
+                            checked={selectedUserIds.has(item.user.id)}
+                            onChange={() => toggleUserSelection(item.user.id)}
+                            style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                          />
                         ) : (
-                          <div style={avatarFallbackStyle}><Users size={14} /></div>
+                          <div style={{ width: '18px', height: '18px' }} /> /* Spacer for completed users */
                         )}
-                        <div>
-                          <div style={userNameStyle}>{item.user.name}</div>
-                          <div style={userEmailStyle}>{item.user.email}</div>
+                        {/* User Bio */}
+                        <div style={userBioStyle}>
+                          {item.user.avatar ? (
+                            <img src={item.user.avatar} alt="" style={avatarStyle} />
+                          ) : (
+                            <div style={avatarFallbackStyle}><Users size={14} /></div>
+                          )}
+                          <div>
+                            <div style={userNameStyle}>{item.user.name}</div>
+                            <div style={userEmailStyle}>{item.user.email}</div>
+                          </div>
                         </div>
                       </div>
 

@@ -15,6 +15,7 @@ import { Management } from './pages/Management';
 import { TaskTracking } from './pages/TaskTracking';
 import { SystemAdmin } from './pages/SystemAdmin';
 import { Profile } from './pages/Profile';
+import { ReminderModal } from './components/ReminderModal';
 
 // ─── Login Screen ────────────────────────────────────────────────────────────
 const LoginScreen: React.FC = () => {
@@ -54,7 +55,7 @@ const LoginScreen: React.FC = () => {
 };
 
 const AppContent: React.FC = () => {
-  const { loading, currentUser } = useAuth();
+  const { loading, currentUser, pendingReminders, dismissReminder } = useAuth();
   
   // Routing states
   const [page, setPage] = useState<string>('home');
@@ -177,6 +178,18 @@ const AppContent: React.FC = () => {
           {renderPage()}
         </main>
       </div>
+
+      {/* Task Reminder Modal — shown on login if there are pending reminders */}
+      {pendingReminders.length > 0 && (
+        <ReminderModal
+          reminders={pendingReminders}
+          onDismiss={dismissReminder}
+          onNavigateToTask={(taskId) => {
+            setSelectedTaskId(taskId);
+            setPage('task-details');
+          }}
+        />
+      )}
     </div>
   );
 };

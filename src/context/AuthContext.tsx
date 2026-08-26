@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { auth, googleProvider } from '../firebase';
 import { signInWithPopup, signInWithRedirect, signOut as fbSignOut } from 'firebase/auth';
-import type { User, Role, Tag, UserRole, UserTag } from '../types';
+import type { User, Role, Tag, UserRole, UserTag, TaskReminder } from '../types';
 import { dbService } from '../services/db';
 
 interface AuthContextType {
@@ -10,11 +10,13 @@ interface AuthContextType {
   userRoles: Role[];
   userTags: Tag[];
   testUsers: User[];
+  pendingReminders: TaskReminder[];
   loading: boolean;
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   switchRole: (roleId: string) => void;
   refreshAuthData: () => Promise<void>;
+  dismissReminder: (reminderId: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,6 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userRoles, setUserRoles] = useState<Role[]>([]);
   const [userTags, setUserTags] = useState<Tag[]>([]);
   const [testUsers, setTestUsers] = useState<User[]>([]);
+  const [pendingReminders, setPendingReminders] = useState<TaskReminder[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -103,6 +106,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const savedRoleId = localStorage.getItem(`protask_active_role_${user.id}`);
     const active = myRoles.find(r => r.id === savedRoleId) || myRoles[0] || null;
     setActiveRole(active);
+
+    // Load pending reminders for this user
+    try {
+      const reminders = await dbService.getRemindersForUser(user.id);
+      setPendingReminders(reminders);
+    } catch (e) {
+      // Reminders are non-critical, ignore errors
+    }
   };
 
   const loginWithGoogle = async () => {
@@ -156,6 +167,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const dismissReminder = async (reminderId: string) => {
+    await dbService.markReminderSeen(reminderId);
+    setPendingReminders(prev => prev.filter(r => r.id !== reminderId));
+  };
+
   return (
     <AuthContext.Provider value={{
       currentUser,
@@ -163,11 +179,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       userRoles,
       userTags,
       testUsers,
+      pendingReminders,
       loading,
       loginWithGoogle,
       logout,
       switchRole,
-      refreshAuthData
+      refreshAuthData,
+      dismissReminder
     }}>
       {children}
     </AuthContext.Provider>

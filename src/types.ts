@@ -90,3 +90,11 @@ export interface TaskHistory {
   oldValues: Partial<Task>;
   newValues: Partial<Task>;
 }
+
+export interface TaskReminder {
+  id: string;
+  taskId: string;
+  userId: string;      // המשתמש שצריך לקבל את ההתראה
+  sentAt: string;      // מתי נשלחה
+  seenAt: string | null; // null עד שהמשתמש ראה אותה
+}
