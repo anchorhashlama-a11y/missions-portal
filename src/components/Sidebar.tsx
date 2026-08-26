@@ -74,8 +74,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, setPage }) => {
   return (
     <aside className="sidebar">
       <div style={logoContainerStyle}>
-        <div style={logoIconStyle}>PT</div>
-        <h2 style={logoTextStyle}>ProTask</h2>
+        <div style={logoIconStyle}>ע</div>
+        <h2 style={logoTextStyle}>"עוגן"</h2>
       </div>
 
       <nav style={navStyle}>

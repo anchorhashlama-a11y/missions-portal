@@ -53,8 +53,8 @@ export const Header: React.FC = () => {
     <header style={headerStyle}>
       {/* Mobile Brand Name */}
       <div style={brandContainerStyle}>
-        <span style={mobileLogoStyle}>PT</span>
-        <h1 style={brandTextStyle}>ProTask</h1>
+        <span style={mobileLogoStyle}>ע</span>
+        <h1 style={brandTextStyle}>"עוגן"- מערכת ניהול ההשלמה הטכנולוגית של תקשוב</h1>
       </div>
 
       <div style={controlsStyle}>
