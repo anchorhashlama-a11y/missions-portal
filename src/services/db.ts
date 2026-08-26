@@ -7,7 +7,8 @@ import {
   updateDoc, 
   query, 
   where,
-  deleteDoc
+  deleteDoc,
+  onSnapshot
 } from 'firebase/firestore';
 import type { User, Tag, Role, Task, Forum, ForumPost, TaskStatus, UserRole, UserTag, TaskReminder } from '../types';
 import * as seeder from './seeder';
@@ -285,6 +286,20 @@ export const dbService = {
     );
     const snap = await getDocs(q);
     return snap.docs.map(d => d.data() as TaskReminder);
+  },
+
+  subscribeToReminders(userId: string, callback: (reminders: TaskReminder[]) => void): () => void {
+    const q = query(
+      collection(firestoreDb, 'task_reminders'),
+      where('userId', '==', userId),
+      where('seenAt', '==', null)
+    );
+    return onSnapshot(q, (snapshot) => {
+      const reminders = snapshot.docs.map(d => d.data() as TaskReminder);
+      callback(reminders);
+    }, (error) => {
+      console.error('Error listening to reminders:', error);
+    });
   },
 
   async sendReminders(taskId: string, userIds: string[]): Promise<void> {

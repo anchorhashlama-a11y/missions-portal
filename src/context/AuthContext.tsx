@@ -107,14 +107,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const active = myRoles.find(r => r.id === savedRoleId) || myRoles[0] || null;
     setActiveRole(active);
 
-    // Load pending reminders for this user
-    try {
-      const reminders = await dbService.getRemindersForUser(user.id);
-      setPendingReminders(reminders);
-    } catch (e) {
-      // Reminders are non-critical, ignore errors
-    }
+    // Reminders are now handled by a separate real-time useEffect
   };
+
+  useEffect(() => {
+    let unsubscribeReminders: (() => void) | null = null;
+    
+    if (currentUser) {
+      unsubscribeReminders = dbService.subscribeToReminders(currentUser.id, (reminders) => {
+        setPendingReminders(reminders);
+      });
+    } else {
+      setPendingReminders([]);
+    }
+
+    return () => {
+      if (unsubscribeReminders) unsubscribeReminders();
+    };
+  }, [currentUser]);
 
   const loginWithGoogle = async () => {
     if (!auth || !googleProvider) {
