@@ -1,0 +1,551 @@
+/* Custom CSS Design System - ProTask Hebrew Enterprise */
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* Colors - Light Theme */
+  --background: #f7f9fb;
+  --on-background: #191c1e;
+  --surface: #ffffff;
+  --on-surface: #191c1e;
+  --on-surface-variant: #434653;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f2f4f6;
+  --surface-container: #eceef0;
+  --surface-container-high: #e6e8ea;
+  --surface-container-highest: #e0e3e5;
+  
+  --primary: #003c90;
+  --on-primary: #ffffff;
+  --primary-container: #d9e2ff;
+  --on-primary-container: #001945;
+  
+  --secondary: #505f76;
+  --on-secondary: #ffffff;
+  --secondary-container: #d3e4fe;
+  --on-secondary-container: #0b1c30;
+  
+  --outline: #737784;
+  --outline-variant: #c3c6d5;
+  
+  /* Semantic Status Colors */
+  --status-urgent: #ef4444; /* Overdue / Urgent */
+  --status-pending: #f59e0b; /* Medium priority / New */
+  --status-success: #10b981; /* Completed */
+  
+  /* Fonts */
+  --font-family: 'Assistant', sans-serif;
+  
+  /* Rounding styles */
+  --rounded-sm: 0.25rem;
+  --rounded-default: 0.5rem;
+  --rounded-md: 0.75rem;
+  --rounded-lg: 1rem;
+  --rounded-xl: 1.5rem;
+  --rounded-full: 9999px;
+  
+  /* Shadow & Depth */
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-card-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
+  --shadow-nav: 0 -4px 10px rgba(0, 0, 0, 0.03);
+}
+
+:root.dark {
+  /* Colors - Dark Theme */
+  --background: #111315;
+  --on-background: #e2e2e5;
+  --surface: #1a1c1e;
+  --on-surface: #e2e2e5;
+  --on-surface-variant: #c3c6cf;
+  --surface-container-lowest: #0e1012;
+  --surface-container-low: #1e2022;
+  --surface-container: #282a2d;
+  --surface-container-high: #323539;
+  --surface-container-highest: #3d4045;
+  
+  --primary: #b0c6ff;
+  --on-primary: #002d6f;
+  --primary-container: #00439c;
+  --on-primary-container: #d9e2ff;
+  
+  --secondary: #b7c8e1;
+  --on-secondary: #223146;
+  --secondary-container: #38485d;
+  --on-secondary-container: #d3e4fe;
+  
+  --outline: #8c9099;
+  --outline-variant: #43474e;
+  
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  --shadow-card-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  --shadow-nav: 0 -4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Reset and Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--background);
+  color: var(--on-background);
+  direction: rtl;
+  text-align: right;
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--outline-variant);
+  border-radius: var(--rounded-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--outline);
+}
+
+/* Interactive elements */
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+a:hover {
+  opacity: 0.8;
+}
+
+button, input, textarea, select {
+  font-family: var(--font-family);
+  font-size: 1rem;
+}
+
+/* Layout shell */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* main-content is just a block container — sidebar and bottom-nav are fixed */
+.main-content {
+  display: block;
+  width: 100%;
+  flex: 1;
+}
+
+/* Mobile: full width, bottom padding for fixed nav bar */
+.page-wrapper {
+  padding: 20px 16px;
+  padding-bottom: 80px;
+  width: 100%;
+  min-height: calc(100vh - 64px);
+}
+
+/* Desktop: shift content left to make room for the 260px sidebar on the right */
+@media (min-width: 769px) {
+  .page-wrapper {
+    padding: 32px 40px;
+    padding-bottom: 32px;
+    margin-right: 260px;
+    max-width: calc(1280px + 260px);
+  }
+}
+
+/* Cards */
+.card {
+  background-color: var(--surface);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--rounded-xl);
+  padding: 20px;
+  margin-bottom: 16px;
+  position: relative;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+/* Unread vertical bar on the right edge */
+.card.unread::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: var(--status-pending);
+  border-top-right-radius: var(--rounded-xl);
+  border-bottom-right-radius: var(--rounded-xl);
+}
+
+.card.urgent::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: var(--status-urgent);
+  border-top-right-radius: var(--rounded-xl);
+  border-bottom-right-radius: var(--rounded-xl);
+}
+
+/* Custom checkbox wrapper */
+.checkbox-custom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--rounded-full);
+  border: 2px solid var(--outline);
+  cursor: pointer;
+  background-color: transparent;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.checkbox-custom.checked {
+  background-color: var(--status-success);
+  border-color: var(--status-success);
+}
+
+/* Form Controls */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--on-surface-variant);
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--outline-variant);
+  background-color: var(--surface);
+  color: var(--on-surface);
+  border-radius: var(--rounded-default);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-container);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-weight: 600;
+  border-radius: var(--rounded-default);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  min-height: 48px; /* Touch target */
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  box-shadow: 0 4px 12px rgba(0, 60, 144, 0.2);
+}
+
+.btn-secondary {
+  background-color: var(--surface-container-high);
+  color: var(--on-surface);
+  border: 1px solid var(--outline-variant);
+}
+
+.btn-secondary:hover {
+  background-color: var(--surface-container-highest);
+}
+
+.btn-danger {
+  background-color: var(--status-urgent);
+  color: white;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--rounded-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge-team {
+  background-color: rgba(0, 60, 144, 0.1);
+  color: var(--primary);
+}
+
+.badge-major {
+  background-color: rgba(80, 95, 118, 0.1);
+  color: var(--secondary);
+}
+
+.badge-special {
+  background-color: rgba(115, 41, 0, 0.1);
+  color: #732900;
+}
+
+/* Progress bar */
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background-color: var(--surface-container-high);
+  border-radius: var(--rounded-full);
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: var(--primary);
+  border-radius: var(--rounded-full);
+  transition: width 0.4s cubic-bezier(0.1, 0.8, 0.25, 1);
+}
+
+/* Typography styles */
+h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.text-muted {
+  color: var(--on-surface-variant);
+  font-size: 0.85rem;
+}
+
+/* Animation Utilities */
+.fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =====================================================
+   RESPONSIVE NAVIGATION
+   ===================================================== */
+
+/* SIDEBAR — desktop right-side nav */
+.sidebar {
+  position: fixed;
+  top: 64px; /* below the 64px header */
+  right: 0;
+  bottom: 0;
+  width: 260px;
+  background-color: var(--surface);
+  border-left: 1px solid var(--outline-variant);
+  display: none; /* hidden on mobile */
+  flex-direction: column;
+  padding: 24px 16px;
+  z-index: 100;
+  overflow-y: auto;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+@media (min-width: 769px) {
+  .sidebar {
+    display: flex; /* shown on desktop */
+  }
+}
+
+/* BOTTOM NAV — mobile only */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background-color: var(--surface);
+  border-top: 1px solid var(--outline-variant);
+  box-shadow: var(--shadow-nav);
+  display: flex; /* shown on mobile */
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 8px;
+  z-index: 100;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+@media (min-width: 769px) {
+  .bottom-nav {
+    display: none; /* hidden on desktop */
+  }
+}
+
+/* =====================================================
+   RESPONSIVE PAGE GRIDS
+   ===================================================== */
+
+/* TaskDetails: main + sidebar info panel */
+.details-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.details-main {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.details-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+@media (min-width: 900px) {
+  .details-grid {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+}
+
+/* SystemAdmin: list + form panel */
+.admin-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.admin-form {
+  width: 100%;
+  padding: 24px;
+  align-self: start;
+}
+
+@media (min-width: 900px) {
+  .admin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 24px;
+    align-items: start;
+  }
+}
+
+/* Admin scroll list: full height on mobile, capped on desktop */
+.admin-scroll-list {
+  /* no max-height on mobile — let it flow naturally */
+}
+
+@media (min-width: 900px) {
+  .admin-scroll-list {
+    max-height: 480px;
+    overflow-y: auto;
+  }
+}
+
+/* =====================================================
+   GLOBAL MOBILE TWEAKS
+   ===================================================== */
+
+/* Prevent horizontal overflow on any page */
+* {
+  min-width: 0;
+}
+
+/* Smaller h1 on mobile */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.4rem;
+  }
+  h2 {
+    font-size: 1.15rem;
+  }
+
+  /* Cards take full width with less padding */
+  .card {
+    padding: 16px;
+    border-radius: var(--rounded-lg);
+  }
+
+  /* Full-width form controls */
+  .form-control {
+    width: 100%;
+  }
+
+  /* Stack flex rows on mobile */
+  .flex-row-mobile-stack {
+    flex-direction: column !important;
+  }
+
+  /* Tabs scroll horizontally on mobile */
+  .tabs-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap !important;
+    padding-bottom: 4px;
+  }
+
+  /* Make buttons at least 44px tall for touch */
+  .btn {
+    min-height: 44px;
+  }
+}
