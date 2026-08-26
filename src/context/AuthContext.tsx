@@ -112,16 +112,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     try {
       setLoading(true);
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      if (isMobile) {
-        await signInWithRedirect(auth, googleProvider);
+      await signInWithPopup(auth, googleProvider);
+    } catch (error: any) {
+      if (error?.code === 'auth/popup-blocked' || error?.code === 'auth/popup-closed-by-user') {
+        console.warn("Popup blocked or closed, falling back to redirect...");
+        try {
+          await signInWithRedirect(auth, googleProvider);
+        } catch (redirectError: any) {
+          console.error("Redirect login failed:", redirectError);
+          alert("ההתחברות נכשלה. שגיאה: " + (redirectError?.message || ""));
+          setLoading(false);
+        }
       } else {
-        await signInWithPopup(auth, googleProvider);
+        console.error("Google Auth login failed:", error);
+        alert("ההתחברות נכשלה. שגיאה: " + (error?.message || ""));
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Google Auth login failed:", error);
-      alert("ההתחברות נכשלה. אנא נסה שנית.");
-      setLoading(false);
     }
   };
 
