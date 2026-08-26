@@ -30,8 +30,12 @@ export const MyTasks: React.FC<MyTasksProps> = ({ setPage, setSelectedTaskId }) 
       if (!currentUser) return;
       try {
         setLoading(true);
-        const allTasks = await dbService.getTasks();
-        const userTasks = backendService.getTasksForUser(currentUser.id, allTasks, [], []);
+        const [allTasks, allUsers, allUserTags] = await Promise.all([
+          dbService.getTasks(),
+          dbService.getUsers(),
+          dbService.getUserTags()
+        ]);
+        const userTasks = backendService.getTasksForUser(currentUser.id, allTasks, allUsers, allUserTags);
         setTasks(userTasks);
 
         const allStatuses = await dbService.getTaskStatuses();
@@ -301,16 +305,16 @@ const btnGroupStyle: React.CSSProperties = {
   display: 'flex',
   border: '1px solid var(--outline-variant)',
   borderRadius: 'var(--rounded-default)',
-  overflow: 'hidden'
+  overflow: 'hidden',
+  backgroundColor: 'var(--surface-container)'
 };
 
 const filterBtnStyle: React.CSSProperties = {
   padding: '8px 16px',
   fontSize: '0.85rem',
   fontWeight: 600,
-  border: 'none',
-  background: 'var(--surface)',
-  color: 'var(--on-surface-variant)',
+  background: 'none',
+  color: 'var(--on-surface)',
   cursor: 'pointer',
   transition: 'background-color 0.2s ease, color 0.2s ease',
   borderLeft: '1px solid var(--outline-variant)'

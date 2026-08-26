@@ -12,32 +12,22 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || ""
 };
 
-// Check if actual configuration has been provided (not placeholders or empty)
-const isFirebaseEnabled = !!(
-  import.meta.env.VITE_FIREBASE_API_KEY &&
-  import.meta.env.VITE_FIREBASE_PROJECT_ID &&
-  import.meta.env.VITE_FIREBASE_API_KEY !== "YOUR_API_KEY"
-);
 
 let app;
 let auth: any = null;
 let db: any = null;
 let googleProvider: any = null;
 
-if (isFirebaseEnabled) {
-  try {
-    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-    auth = getAuth(app);
-    db = getFirestore(app);
-    googleProvider = new GoogleAuthProvider();
-    googleProvider.setCustomParameters({ prompt: 'select_account' });
-    console.log("Firebase initialized successfully");
-  } catch (error) {
-    console.error("Failed to initialize Firebase, falling back to local storage:", error);
-  }
-} else {
-  console.log("Firebase config not found or invalid. Running in offline/localStorage mode.");
+try {
+  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+  auth = getAuth(app);
+  db = getFirestore(app);
+  googleProvider = new GoogleAuthProvider();
+  googleProvider.setCustomParameters({ prompt: 'select_account' });
+  console.log("Firebase initialized successfully");
+} catch (error) {
+  console.error("Failed to initialize Firebase:", error);
 }
 
-export { auth, db, googleProvider, isFirebaseEnabled };
+export { auth, db, googleProvider };
 export default app;

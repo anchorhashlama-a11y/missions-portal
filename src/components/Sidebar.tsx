@@ -19,14 +19,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, setPage }) => {
   const { currentUser, activeRole, userTags } = useAuth();
   const [openTasksCount, setOpenTasksCount] = useState(0);
 
-  // Fetch count of open tasks assigned to the user
   useEffect(() => {
     const fetchCount = async () => {
       if (!currentUser) return;
       try {
-        const allTasks = await dbService.getTasks();
-        const myTasks = backendService.getTasksForUser(currentUser.id, allTasks, [], []); // Fetch user tasks
-        const statuses = await dbService.getTaskStatuses();
+        const [allTasks, allUsers, allUserTags, statuses] = await Promise.all([
+          dbService.getTasks(),
+          dbService.getUsers(),
+          dbService.getUserTags(),
+          dbService.getTaskStatuses()
+        ]);
+        const myTasks = backendService.getTasksForUser(currentUser.id, allTasks, allUsers, allUserTags);
         
         let count = 0;
         for (const t of myTasks) {
@@ -74,8 +77,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, setPage }) => {
   return (
     <aside className="sidebar">
       <div style={logoContainerStyle}>
-        <div style={logoIconStyle}>ע</div>
-        <h2 style={logoTextStyle}>"עוגן"</h2>
+        <img src="/logo.png" alt="עוגן" style={logoIconStyle} />
+        <div>
+          <h2 style={logoTextStyle}>עוגן</h2>
+          <div style={logoSubtitleStyle}>מערכת השלמה הטכנולוגית</div>
+        </div>
       </div>
 
       <nav style={navStyle}>
@@ -119,23 +125,27 @@ const logoContainerStyle: React.CSSProperties = {
 };
 
 const logoIconStyle: React.CSSProperties = {
-  width: '36px',
-  height: '36px',
-  backgroundColor: 'var(--primary)',
-  color: 'var(--on-primary)',
+  width: '44px',
+  height: '44px',
+  objectFit: 'contain',
   borderRadius: 'var(--rounded-md)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontWeight: 800,
-  fontSize: '1.1rem'
+  flexShrink: 0
 };
 
 const logoTextStyle: React.CSSProperties = {
   fontSize: '1.3rem',
   fontWeight: 800,
   color: 'var(--primary)',
-  margin: 0
+  margin: 0,
+  lineHeight: 1.1
+};
+
+const logoSubtitleStyle: React.CSSProperties = {
+  fontSize: '0.65rem',
+  color: 'var(--on-surface-variant)',
+  marginTop: '2px',
+  lineHeight: 1.2,
+  opacity: 0.8
 };
 
 const navStyle: React.CSSProperties = {
@@ -152,7 +162,7 @@ const itemStyle: React.CSSProperties = {
   padding: '12px 16px',
   borderRadius: 'var(--rounded-md)',
   border: 'none',
-  background: 'none',
+  backgroundColor: 'transparent',
   color: 'var(--on-surface-variant)',
   cursor: 'pointer',
   textAlign: 'right',

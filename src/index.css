@@ -129,6 +129,17 @@ button, input, textarea, select {
   font-size: 1rem;
 }
 
+/* Ensure buttons inherit correct colors in both themes */
+button {
+  color: inherit;
+  background-color: transparent;
+  border: none;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Layout shell */
 .app-container {
   display: flex;
@@ -157,7 +168,8 @@ button, input, textarea, select {
     padding: 32px 40px;
     padding-bottom: 32px;
     margin-right: 260px;
-    max-width: calc(1280px + 260px);
+    width: calc(100% - 260px);
+    max-width: 1280px;
   }
 }
 
@@ -403,6 +415,12 @@ h3 {
   .sidebar {
     display: flex; /* shown on desktop */
   }
+}
+
+/* Sidebar nav button hover effect */
+.sidebar nav button:hover {
+  background-color: var(--surface-container) !important;
+  color: var(--on-surface) !important;
 }
 
 /* BOTTOM NAV — mobile only */

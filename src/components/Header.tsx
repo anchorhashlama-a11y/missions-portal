@@ -1,35 +1,28 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { dbService } from '../services/db';
 import { 
   Sun, 
   Moon, 
-  RefreshCw, 
-  User as UserIcon, 
-  ChevronDown, 
-  ShieldAlert,
-  Database
+  User as UserIcon
 } from 'lucide-react';
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  setPage?: (page: string) => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ setPage }) => {
   const { 
     currentUser, 
     activeRole, 
     userRoles, 
-    testUsers, 
-    switchUser, 
     switchRole,
-    loginWithGoogle,
-    logout,
-    isFirebase
+    loginWithGoogle
   } = useAuth();
 
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     if (document.documentElement.classList.contains('dark')) return 'dark';
     return 'light';
   });
-
-  const [showSwitchMenu, setShowSwitchMenu] = useState(false);
 
   const toggleTheme = () => {
     const nextTheme = theme === 'light' ? 'dark' : 'light';
@@ -43,102 +36,18 @@ export const Header: React.FC = () => {
     }
   };
 
-  const handleResetData = async () => {
-    if (window.confirm("האם אתה בטוח שברצונך לאפס את כל המידע לנתוני המקור? (איפוס LocalStorage)")) {
-      await dbService.resetData();
-    }
-  };
-
   return (
     <header style={headerStyle}>
       {/* Mobile Brand Name */}
       <div style={brandContainerStyle}>
-        <span style={mobileLogoStyle}>ע</span>
-        <h1 style={brandTextStyle}>"עוגן"- מערכת ניהול ההשלמה הטכנולוגית של תקשוב</h1>
+        <img src="/logo.png" alt="עוגן" style={mobileLogoStyle} />
+        <div style={brandWrapperStyle}>
+          <h1 style={brandTextStyle}>עוגן</h1>
+          <span style={brandSubtitleStyle}>מערכת ניהול ההשלמה הטכנולוגית של תקשוב</span>
+        </div>
       </div>
 
       <div style={controlsStyle}>
-        {/* Firebase Authentication Button */}
-        {isFirebase ? (
-          <button 
-            onClick={currentUser && currentUser.id.startsWith('user_google') ? logout : loginWithGoogle} 
-            style={fbAuthBtnStyle}
-            title={currentUser && currentUser.id.startsWith('user_google') ? "התנתק מגוגל" : "התחבר עם גוגל"}
-          >
-            <UserIcon size={16} />
-            <span style={hideMobileStyle}>
-              {currentUser && currentUser.id.startsWith('user_google') 
-                ? "התנתק" 
-                : "התחבר עם גוגל"}
-            </span>
-          </button>
-        ) : (
-          <span style={offlineBadgeStyle} title="Vite environment keys are missing">
-            אופליין
-          </span>
-        )}
-
-        {/* Database Reset Button */}
-        <button 
-          onClick={handleResetData} 
-          style={actionBtnStyle} 
-          title="אפס נתוני מערכת למקור"
-        >
-          <Database size={16} />
-          <span style={hideMobileStyle}>אפס נתונים</span>
-        </button>
-
-        {/* Switch User Dropdown */}
-        <div style={dropdownContainerStyle}>
-          <button 
-            onClick={() => setShowSwitchMenu(!showSwitchMenu)} 
-            style={userSwitchBtnStyle}
-          >
-            {currentUser?.avatar ? (
-              <img src={currentUser.avatar} alt="" style={avatarStyle} />
-            ) : (
-              <div style={avatarFallbackStyle}>
-                <UserIcon size={14} />
-              </div>
-            )}
-            <div style={userInfoTextStyle}>
-              <span style={userNameStyle}>{currentUser?.name}</span>
-              <span style={userRoleStyle}>
-                {activeRole ? activeRole.name : "ללא תפקיד"}
-              </span>
-            </div>
-            <ChevronDown size={14} style={{ marginRight: '4px' }} />
-          </button>
-
-          {showSwitchMenu && (
-            <div style={switchMenuStyle}>
-              <div style={menuHeaderStyle}>
-                <ShieldAlert size={14} style={{ marginLeft: '6px' }} />
-                בחר משתמש לבדיקה:
-              </div>
-              <div style={userListStyle}>
-                {testUsers.map(user => (
-                  <button
-                    key={user.id}
-                    onClick={() => {
-                      switchUser(user.id);
-                      setShowSwitchMenu(false);
-                    }}
-                    style={user.id === currentUser?.id ? activeUserItemStyle : userItemStyle}
-                  >
-                    {user.avatar ? (
-                      <img src={user.avatar} alt="" style={menuAvatarStyle} />
-                    ) : (
-                      <div style={menuAvatarFallbackStyle}><UserIcon size={12} /></div>
-                    )}
-                    <span style={{ flex: 1, textAlign: 'right' }}>{user.name}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
         {/* Active Role Selector (If user has multiple roles) */}
         {userRoles.length > 1 && (
           <div style={roleSelectorContainerStyle}>
@@ -165,6 +74,40 @@ export const Header: React.FC = () => {
         >
           {theme === 'light' ? <Sun size={20} /> : <Moon size={20} />}
         </button>
+
+        {/* Current User Info - Now clickable for Profile */}
+        {currentUser ? (
+          <div style={dropdownContainerStyle}>
+            <div 
+              style={{...userSwitchBtnStyle, cursor: setPage ? 'pointer' : 'default'}}
+              onClick={() => setPage && setPage('profile')}
+              title="לחץ לפרופיל אישי"
+            >
+              {currentUser.avatar ? (
+                <img src={currentUser.avatar} alt="" style={avatarStyle} />
+              ) : (
+                <div style={avatarFallbackStyle}>
+                  <UserIcon size={14} />
+                </div>
+              )}
+              <div style={userInfoTextStyle}>
+                <span style={userNameStyle}>{currentUser.name}</span>
+                <span style={userRoleStyle}>
+                  {activeRole ? activeRole.name : "ללא תפקיד"}
+                </span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <button 
+            onClick={loginWithGoogle} 
+            style={fbAuthBtnStyle}
+          >
+            <UserIcon size={16} />
+            <span style={hideMobileStyle}>התחבר עם גוגל</span>
+          </button>
+        )}
+
       </div>
     </header>
   );
@@ -191,25 +134,34 @@ const brandContainerStyle: React.CSSProperties = {
   gap: '8px'
 };
 
-// Toggle brand in mobile screens (since sidebar is hidden)
 const mobileLogoStyle: React.CSSProperties = {
-  width: '32px',
-  height: '32px',
-  backgroundColor: 'var(--primary)',
-  color: 'var(--on-primary)',
-  borderRadius: 'var(--rounded-md)',
+  width: '36px',
+  height: '36px',
+  objectFit: 'contain',
+  borderRadius: 'var(--rounded-md)'
+};
+
+const brandWrapperStyle: React.CSSProperties = {
   display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontWeight: 800,
-  fontSize: '0.9rem'
+  flexDirection: 'column',
+  gap: '1px'
 };
 
 const brandTextStyle: React.CSSProperties = {
   fontSize: '1.15rem',
   fontWeight: 800,
   color: 'var(--primary)',
-  margin: 0
+  margin: 0,
+  lineHeight: 1.1
+};
+
+const brandSubtitleStyle: React.CSSProperties = {
+  fontSize: '0.7rem',
+  fontWeight: 500,
+  color: 'var(--on-surface-variant)',
+  margin: 0,
+  lineHeight: 1.2,
+  opacity: 0.85
 };
 
 const controlsStyle: React.CSSProperties = {
@@ -242,17 +194,6 @@ const fbAuthBtnStyle: React.CSSProperties = {
   borderColor: 'rgba(0, 60, 144, 0.15)'
 };
 
-const offlineBadgeStyle: React.CSSProperties = {
-  fontSize: '0.75rem',
-  fontWeight: 700,
-  color: 'var(--on-secondary-container)',
-  backgroundColor: 'var(--secondary-container)',
-  padding: '4px 8px',
-  borderRadius: 'var(--rounded-sm)',
-  display: 'inline-flex',
-  alignItems: 'center'
-};
-
 const dropdownContainerStyle: React.CSSProperties = {
   position: 'relative'
 };
@@ -266,7 +207,6 @@ const userSwitchBtnStyle: React.CSSProperties = {
   border: '1px solid var(--outline-variant)',
   backgroundColor: 'var(--surface)',
   color: 'var(--on-surface)',
-  cursor: 'pointer',
   minHeight: '40px',
   transition: 'background-color 0.2s ease'
 };
@@ -308,75 +248,6 @@ const userRoleStyle: React.CSSProperties = {
   lineHeight: '1.2'
 };
 
-const switchMenuStyle: React.CSSProperties = {
-  position: 'absolute',
-  top: '46px',
-  left: 0,
-  width: '200px',
-  backgroundColor: 'var(--surface)',
-  border: '1px solid var(--outline)',
-  borderRadius: 'var(--rounded-md)',
-  boxShadow: 'var(--shadow-card-hover)',
-  zIndex: 200,
-  overflow: 'hidden'
-};
-
-const menuHeaderStyle: React.CSSProperties = {
-  backgroundColor: 'var(--surface-container-high)',
-  padding: '8px 12px',
-  fontSize: '0.8rem',
-  fontWeight: 700,
-  color: 'var(--on-surface)',
-  borderBottom: '1px solid var(--outline-variant)',
-  display: 'flex',
-  alignItems: 'center'
-};
-
-const userListStyle: React.CSSProperties = {
-  maxHeight: '260px',
-  overflowY: 'auto',
-  display: 'flex',
-  flexDirection: 'column'
-};
-
-const userItemStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '8px',
-  padding: '8px 12px',
-  border: 'none',
-  background: 'none',
-  color: 'var(--on-surface)',
-  cursor: 'pointer',
-  width: '100%',
-  transition: 'background-color 0.2s ease',
-  minHeight: '36px'
-};
-
-const activeUserItemStyle: React.CSSProperties = {
-  ...userItemStyle,
-  backgroundColor: 'var(--surface-container)',
-  fontWeight: 700
-};
-
-const menuAvatarStyle: React.CSSProperties = {
-  width: '20px',
-  height: '20px',
-  borderRadius: 'var(--rounded-full)',
-  objectFit: 'cover'
-};
-
-const menuAvatarFallbackStyle: React.CSSProperties = {
-  width: '20px',
-  height: '20px',
-  borderRadius: 'var(--rounded-full)',
-  backgroundColor: 'var(--surface-container-high)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: 'var(--on-surface-variant)'
-};
-
 const roleSelectorContainerStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
@@ -403,7 +274,6 @@ const selectStyle: React.CSSProperties = {
 
 const hideMobileStyle: React.CSSProperties = {};
 
-// Custom CSS Inject to handle mobile toggling
 const injectMediaQueries = () => {
   if (document.getElementById('header-responsive-style')) return;
   const style = document.createElement('style');
